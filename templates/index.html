@@ -134,7 +134,7 @@
             <div id="timer-controls" class="hidden">
                 <div class="timer-display">00:00:00</div>
                 <div class="controls">
-                    <button class="btn btn-primary" id="start-pause">Start</button>
+                    <button class="btn btn-primary" id="start-stop-resume">Start</button>
                     <button class="btn btn-primary" id="done" onclick="endSession()">Done</button>
                 </div>
             </div>
@@ -173,20 +173,31 @@
                 `${String(time.getUTCSeconds()).padStart(2, '0')}`;
         }
 
-        document.getElementById('start-pause').addEventListener('click', () => {
+        document.getElementById('start-stop-resume').addEventListener('click', () => {
+            const button = document.getElementById('start-stop-resume');
             if (!isRunning) {
+                // Start the timer
                 startTime = Date.now();
                 if (!timer) {
                     timer = setInterval(updateTimer, 1000);
                 }
                 isRunning = true;
-                this.textContent = 'Pause';
+                button.textContent = 'Stop';
             } else {
-                elapsed += Date.now() - startTime;
-                clearInterval(timer);
-                timer = null;
-                isRunning = false;
-                this.textContent = 'Resume';
+                if (button.textContent === 'Stop') {
+                    // Pause the timer
+                    elapsed += Date.now() - startTime;
+                    clearInterval(timer);
+                    timer = null;
+                    isRunning = false;
+                    button.textContent = 'Resume';
+                } else if (button.textContent === 'Resume') {
+                    // Resume the timer
+                    startTime = Date.now();
+                    timer = setInterval(updateTimer, 1000);
+                    isRunning = true;
+                    button.textContent = 'Stop';
+                }
             }
         });
 
@@ -218,7 +229,7 @@
             document.getElementById('subject').disabled = false;
             document.getElementById('subject').value = '';
             document.querySelector('.timer-display').textContent = '00:00:00';
-            document.getElementById('start-pause').textContent = 'Start';
+            document.getElementById('start-stop-resume').textContent = 'Start';
         }
 
         async function updateChart() {
